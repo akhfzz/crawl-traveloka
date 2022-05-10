@@ -22,35 +22,51 @@ class resourceSearch():
         self.options.add_experimental_option("excludeSwitches", ['enable-automation', 'enable-logging'])
         
         #btn #xpath bisa diganti sesuai keinginan
-        
-        self.driver.implicitly_wait(50)
+        while True:
+            self.driver.get("https://m.tiket.com")
+            self.driver.refresh()
+            choice = str(input("Which product that want you do?: "))
+            self.driver.implicitly_wait(60)
 
-        #submit #jika xpath btn diganti maka xpath search jg diganti
-        search=self.driver.find_element(by=By.XPATH, value='//*[@id="__next"]/div[4]/div/div[1]/div/div/div[3]/div/div/div/div[5]/div[3]/div[5]')
-        search.click()
-        #jika eror berarti xpath hanya berguna saat non dialog pada laman
+            if choice == 'pesawat':
+                product = self.driver.find_element_by_xpath("//a[contains(@href, '/pesawat')]")
+                self.driver.execute_script("arguments[0].click();", product)
+                self.driver.implicitly_wait(60)
+            elif choice == 'hotel':
+                product = self.driver.find_element_by_xpath("//a[contains(@href, '/hotel')]")
+                self.driver.execute_script("arguments[0].click();", product)
+                self.driver.implicitly_wait(60)
+            elif choice == 'kereta api':
+                product = self.driver.find_element_by_xpath("//a[contains(@href, '/kereta-api')]")
+                self.driver.execute_script("arguments[0].click();", product)
+                self.driver.implicitly_wait(100)
+            elif choice == 'to-do':
+                product = self.driver.find_element_by_xpath("//a[contains(@href, '/to-do')]")
+                self.driver.execute_script("arguments[0].click();", product)
+                self.driver.implicitly_wait(100)
+            elif choice == 'sewa mobil':
+                product = self.driver.find_element_by_xpath("//img[@alt='Sewa Mobil']")
+                product.click()
+                self.driver.implicitly_wait(300)
+                btn_click = self.driver.find_element_by_xpath("//button[@class='product-form-search-btn'")
+                btn_click.click()
 
-        self.driver.implicitly_wait(50)
+            self.driver.implicitly_wait(60)
+            now_url = self.driver.current_url
+            keyword_crawl= now_url.split('/')
+            kategori = ''
 
-        now_url = self.driver.current_url
-        keyword_crawl= now_url.split('/')
-        kategori = ''
-
-        if len(keyword_crawl) > 6:
-            kategori = keyword_crawl[4]
-            keyword_city=keyword_crawl[5].split('.')
-            filename=keyword_city[6]
-            data = [kategori, now_url]
-            file_writerow(f'./result/result-url-crawl/{kategori}-{filename}.csv', data)
-
-        if len(keyword_crawl) == 6:
-            kategori = keyword_crawl[4]
-            keyword_destination=keyword_crawl[5].split('=')
-            filename=keyword_destination[1]
+            kategori = keyword_crawl[3]
             data=[kategori, now_url]
-            file_writerow(f"./result/result-url-crawl/{kategori}-{filename}.csv", data)
+            file_writerow(f"./result/result-url-crawl/url-history.csv", data)
+            print("On progress, dataset has created")
 
-
-        print("On progress, dataset has created")
-        sleep(100)
+            self.driver.implicitly_wait(40)
+            aggre = str(input("What you want crawl url more?(yes/no): "))
+            if aggre == "yes":
+                back = self.driver.find_element_by_xpath("//a[contains(@href, '/')]")
+                self.driver.execute_script("arguments[0].click();", back)
+            elif aggre == "no":
+                self.driver.close()
+            # sleep(100)
 

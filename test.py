@@ -1,40 +1,33 @@
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from time import sleep
 
-driver = webdriver.Chrome('./drivers/chromedriver.exe')
-driver.maximize_window()
-driver.implicitly_wait(30)
-wait = WebDriverWait(driver, 30)
+options = Options()
+options.add_argument("start-maximized")
+# options.add_argument("--headless")
+options.add_argument("-enable-webgl") 
+options.add_argument("--no-sandbox") 
 
-driver.get("https://www.traveloka.com/en-id/hotel/search?spec=02-05-2022.03-05-2022.1.1.HOTEL_GEO.103859.Bandung.2&userPreferences=TRAVEL_FOR_BUSINESS")
+driver = webdriver.Chrome(executable_path='./drivers/chromedriver.exe', options=options)
+driver.get("https://www.tiket.com/")
+login = driver.find_element_by_xpath('//a[@class="header-right-item"]')
+login.click()
+driver.implicitly_wait(40)
+username = driver.find_element_by_xpath('//input[@name="username"]')
+username.send_keys("akhmadfaizal13@gmail.com")
+print("Email sudah di isi")
+submit_username = driver.find_element_by_xpath('//button[@class="btn-custom btn-custom-yellow btn-custom-full submitEmail"]')
+submit_username.click()
+driver.implicitly_wait(40)
+password = driver.find_element_by_xpath('//input[@name="password"]')
+password.send_keys("Kertosari23")
+submit_login = driver.find_element_by_xpath('//button[@class="btn-custom btn-custom-yellow btn-custom-full loginSubmitButton"]')
+submit_login.click()
+print("Login berhasil")
+driver.implicitly_wait(40)
+driver.get('https://www.tiket.com/pesawat/search?d=JKTC&a=SUBC&dType=CITY&aType=CITY&date=2022-05-10&adult=1&child=0&infant=0&class=economy&flexiFare=false')
+ele = driver.find_elements_by_xpath('//div[@class="list-horizontal__middle"]/div[@class="text-time"]')
+for i in range(len(ele)):
+    print(ele[i].text)
 
-# try:
-#     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button#onetrust-accept-btn-handler"))).click()
-# except:
-#     pass
-
-size = driver.find_elements(By.XPATH, "//*[@id='desktopContentV3']/div/div[2]/div[2]/div[3]/div[2]/div[3]")
-org_windows_handle = driver.current_window_handle
-for i in range(len(size)):
-    ele = driver.find_element(By.CLASS_NAME, 'tvat-hotelName')
-    driver.execute_script("arguments[0].scrollIntoView(true);", ele)
-    onclick = wait.until(
-        EC.element_to_be_clickable((By.CLASS_NAME, 'tvat-hotelName'))
-    )
-    onclick.click()
-    all_handles = driver.window_handles
-    driver.switch_to.window(all_handles[1])
-    try:
-        name = wait.until(EC.visibility_of_element_located((By.XPATH, "//*[@id='__next']/div[5]/div[1]/div/div[3]/div/div[1]/div/div[1]/div/div[1]/h1"))).text
-        print(name)
-    except:
-        pass
-    # try:
-    #     price = wait.until(EC.visibility_of_element_located((By.ID, "soloPrecio"))).text
-    #     print(price)
-    # except:
-    #     pass
-    driver.close()
-    driver.switch_to.window(org_windows_handle)
+driver.implicitly_wait(200)
